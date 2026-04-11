@@ -1,0 +1,29 @@
+{
+    "aws": {
+        "accessKeyId": "YOUR_AWS_ACCESS_KEY_HERE",
+        "secretAccessKey": "YOUR_AWS_SECRET_KEY_HERE",
+        "bucket": "YOUR_BUCKET_NAME_HERE",
+        "testFilename": "test-upload.txt"
+    },
+    "r2": {
+        "accountId": "YOUR_CLOUDFLARE_ACCOUNT_ID_HERE",
+        "accessKeyId": "YOUR_R2_ACCESS_KEY_HERE",
+        "secretAccessKey": "YOUR_R2_SECRET_KEY_HERE",
+        "bucket": "YOUR_R2_BUCKET_HERE",
+        "testFilename": "test-r2.txt"
+    },
+    "azure": {
+        "accountName": "YOUR_AZURE_STORAGE_ACCOUNT_NAME",
+        "accountKey": "YOUR_AZURE_STORAGE_ACCOUNT_KEY_BASE64",
+        "container": "YOUR_CONTAINER_NAME_HERE",
+        "testFilename": "test-azure.txt"
+    },
+    "gcs": {
+        "accessKeyId": "YOUR_GCS_HMAC_ACCESS_KEY_HERE",
+        "secretAccessKey": "YOUR_GCS_HMAC_SECRET_HERE",
+        "bucket": "YOUR_GCS_BUCKET_HERE",
+        "testFilename": "test-gcs.txt"
+    },
+    "apiBaseUrl": "http://localhost:8787",
+    "testUserId": "test-user-local"
+}
