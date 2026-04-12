@@ -673,6 +673,24 @@ function FileUploader({ provider, bucket }) {
 
 ## 🔒 Security
 
+> ⚠️ **REQUIRED: Protect your Worker with Cloudflare Access before going to production.**
+>
+> This Worker has no built-in authentication layer. Without Cloudflare Access (or an equivalent reverse proxy), anyone who knows your Worker URL can store credentials and generate presigned URLs without restriction.
+
+### Step 1: Set Up Cloudflare Access (Required for Production)
+
+Cloudflare Access acts as a Zero Trust gateway in front of your Worker. Only authenticated users can reach the API — no code changes needed.
+
+1. Go to [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) → **Access** → **Applications**
+2. Click **Add an Application** → **Self-hosted**
+3. Set the **Application domain** to your Worker URL (e.g., `api-uploader.YOUR-SUBDOMAIN.workers.dev`)
+4. Configure an **Identity Provider** (Google, GitHub, Okta, Azure AD, etc.)
+5. Define an **Access Policy** (e.g., allow only users with `@yourcompany.com` email)
+
+Once enabled, Cloudflare Access automatically injects the authenticated user's email as the `Cf-Access-Authenticated-User-Email` header on every request. **This header is set by Cloudflare's edge — clients cannot forge it.** The Worker uses it as the unique user identifier, ensuring each user can only access their own stored credentials.
+
+> For programmatic access (mobile apps, backends, scripts), use [Cloudflare Access Service Tokens](https://developers.cloudflare.com/cloudflare-one/identity/service-tokens/) instead of browser-based login.
+
 ### Credential Storage
 
 - All provider credentials are **encrypted using AES-256-GCM** before storage
@@ -688,10 +706,11 @@ function FileUploader({ provider, bucket }) {
 
 ### Best Practices
 
-1. **Rotate your master encryption key** periodically
-2. **Use separate credentials** with minimal permissions for each provider
-3. **Monitor your cloud storage** access logs for anomalies
-4. **Implement rate limiting** on your Worker if needed
+1. **Always deploy behind Cloudflare Access** — never expose the Worker URL publicly without it
+2. **Rotate your master encryption key** periodically
+3. **Use separate credentials** with minimal permissions for each provider
+4. **Monitor your cloud storage** access logs for anomalies
+5. **Implement rate limiting** on your Worker if needed
 
 ---
 

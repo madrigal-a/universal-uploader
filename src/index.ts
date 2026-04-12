@@ -29,12 +29,14 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 // --- ENDPOINT 1: POST /api/config ---
 app.post('/api/config', async (c) => {
-  // The X-User-ID header identifies who is making the request.
-  // In production, protect this worker with Cloudflare Access or a
-  // reverse proxy that validates auth and injects this header.
-  const userId = c.req.header('X-User-ID');
+  // In production (behind Cloudflare Access), the authenticated user's email
+  // is injected by the proxy as 'Cf-Access-Authenticated-User-Email'.
+  // This header is NOT forgeable by clients — it comes from Cloudflare's edge.
+  // 'X-User-ID' is only used as a fallback for local development.
+  const userId = c.req.header('Cf-Access-Authenticated-User-Email')
+               ?? c.req.header('X-User-ID');
   if (!userId) {
-    return c.json({ error: 'Unauthorized. Missing X-User-ID header.' }, 401);
+    return c.json({ error: 'Unauthorized. Missing authentication.' }, 401);
   }
 
   const { provider, credentials } = await c.req.json<ConfigBody>();
@@ -62,9 +64,10 @@ app.post('/api/config', async (c) => {
 
 // --- ENDPOINT 2: POST /api/generate-url ---
 app.post('/api/generate-url', async (c) => {
-  const userId = c.req.header('X-User-ID');
+  const userId = c.req.header('Cf-Access-Authenticated-User-Email')
+               ?? c.req.header('X-User-ID');
   if (!userId) {
-    return c.json({ error: 'Unauthorized. Missing X-User-ID header.' }, 401);
+    return c.json({ error: 'Unauthorized. Missing authentication.' }, 401);
   }
 
   const { provider, bucket, filename } = await c.req.json<GenerateBody>();
@@ -149,10 +152,7 @@ app.post('/api/generate-url', async (c) => {
       console.error('Error message:', error.message);
       console.error('Stack trace:', error.stack);
     }
-    return c.json({
-      error: 'Failed to generate URL.',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, 500);
+    return c.json({ error: 'Failed to generate URL.' }, 500);
   }
 });
 
