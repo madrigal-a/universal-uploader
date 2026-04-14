@@ -718,8 +718,6 @@ Once enabled, Cloudflare Access automatically injects the authenticated user's e
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
----
-
 ## 🆘 Support
 
 This is an **open source project**. We encourage you to use the documentation and the included testing utility.
